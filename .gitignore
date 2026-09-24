@@ -1,0 +1,5 @@
+src/
+pkg/
+*.pkg.tar.*
+*.log
+matuwall-0.1.6.tar.gz

@@ -1,0 +1,27 @@
+pkgbase = matuwall-shellfree
+	pkgdesc = Minimal GTK4+libadwaita wallpaper switcher for Wayland. shellfree fork: instant swaybg wallpaper swap, 2% click-away scrim, largest-monitor scrim sizing
+	pkgver = 0.1.6
+	pkgrel = 1
+	url = https://github.com/naurissteins/Matuwall
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = python-gobject
+	depends = gtk4
+	depends = libadwaita
+	depends = gtk4-layer-shell
+	optdepends = matugen: generate colorschemes from the applied wallpaper
+	optdepends = vips: downscale giant wallpapers inside the matuwall-swaybg wrapper
+	conflicts = matuwall
+	conflicts = matuwall-bin
+	conflicts = matuwall-git
+	source = matuwall-0.1.6.tar.gz::https://github.com/naurissteins/Matuwall/archive/refs/tags/0.1.6.tar.gz
+	source = shellfree.patch
+	sha256sums = 89e7b577d23bc77e87de5c06e42bb979463256750b06f2cba1672b7b6f8b6046
+	sha256sums = fc5775eb4e20ea2f03298b37028a48fb535ad0de0430e77268c5df8f5a011264
+
+pkgname = matuwall-shellfree

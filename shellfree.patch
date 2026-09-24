@@ -1,0 +1,61 @@
+--- a/matuwall/app.py	2026-09-19 23:02:18.000000000 -0500
++++ b/matuwall/app.py	2026-09-20 00:58:29.000000000 -0500
+@@ -52,8 +52,8 @@
+         self._panel_size: int = 1
+         self._panel_thumbs_col: int = 3
+         self._panel_margins: tuple[int, int, int, int] = (0, 0, 0, 0)
+-        self._backdrop_enabled = True
+-        self._backdrop_opacity = 1.0
++        self._backdrop_enabled = True  # scrim is opaque Adw grey on layer-shell; disabled on purpose
++        self._backdrop_opacity = 0.02  # invisible scrim: still catches clicks, renders ~2%
+         self._backdrop_click_to_close = True
+         self._keep_ui_alive = False
+         self._needs_reload = False
+--- a/matuwall/ui/content.py	2026-09-19 23:02:18.000000000 -0500
++++ b/matuwall/ui/content.py	2026-09-20 00:58:29.000000000 -0500
+@@ -340,6 +340,8 @@
+             env = os.environ.copy()
+             env.pop("LD_PRELOAD", None)
+             env.pop("GDK_BACKEND", None)
++            # wallpaper first, colors after (see config.toml set=false)
++            subprocess.Popen([os.path.expanduser("~/.local/bin/matuwall-swaybg"), str(path)], env=env)
+             subprocess.Popen(command, env=env)
+             self._report_apply_command(command)
+             if not self._show_applied_overlay(path):
+@@ -375,6 +377,8 @@
+             env = os.environ.copy()
+             env.pop("LD_PRELOAD", None)
+             env.pop("GDK_BACKEND", None)
++            # wallpaper first, colors after (see config.toml set=false)
++            subprocess.Popen([os.path.expanduser("~/.local/bin/matuwall-swaybg"), str(path)], env=env)
+             subprocess.Popen(command, env=env)
+             self._report_apply_command(command)
+             if not self._show_applied_overlay(path):
+--- a/matuwall/ui/panel.py	2026-09-19 23:02:18.000000000 -0500
++++ b/matuwall/ui/panel.py	2026-09-20 00:58:29.000000000 -0500
+@@ -196,10 +196,21 @@
+         LayerShell.set_anchor(window, LayerShell.Edge.RIGHT, True)
+         LayerShell.set_anchor(window, LayerShell.Edge.TOP, True)
+         LayerShell.set_anchor(window, LayerShell.Edge.BOTTOM, True)
+-        monitor_width, monitor_height = self._get_primary_monitor_size()
+-        if monitor_width and monitor_height:
+-            self._set_layer_size(window, monitor_width, monitor_height)
+-        self._apply_panel_size_hint(window, monitor_width, monitor_height)
++        # Scrim must cover the output it lands on (DP-7, 4K). GTK's primary
++        # monitor geometry is 1536x960, which left a partial grey slab; and
++        # layer-shell zero-size fills don't work with GTK4-layer-shell. So
++        # size it to the largest monitor instead.
++        size_w = size_h = 0
++        display = Gdk.Display.get_default()
++        if display is not None:
++            monitors = display.get_monitors()
++            for i in range(monitors.get_n_items() if monitors else 0):
++                g = monitors.get_item(i).get_geometry()
++                size_w = max(size_w, int(g.width))
++                size_h = max(size_h, int(g.height))
++        if size_w and size_h:
++            self._set_layer_size(window, size_w, size_h)
++            self._apply_panel_size_hint(window, size_w, size_h)
+ 
+     def _on_backdrop_pressed(self, *_args) -> None:
+         self._hide_window()

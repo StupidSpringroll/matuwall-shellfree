@@ -1,5 +1,7 @@
 # matuwall-shellfree
 
+Install: `git clone https://github.com/StupidSpringroll/matuwall-shellfree.git && cd matuwall-shellfree && makepkg -si`
+
 Fork of [Matuwall](https://github.com/naurissteins/Matuwall), frozen at the last
 Python (GTK4/libadwaita) release **0.1.6** and diverged. Upstream rewrote the
 app as a native C tool in 0.2.x (apply backends only `awww`/`sweetbg`), which
